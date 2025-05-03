@@ -2,15 +2,31 @@ using UnityEngine;
 
 public class GhoulAnimatorController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Animator ghoulAnimator;
+    private GhoulStates states;
+
+    void Awake()
     {
-        
+        states = GetComponent<GhoulStates>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        states.ghoulHit += HitAnimation;
+    }
+
+    private void OnDisable()
+    {
+        states.ghoulHit -= HitAnimation;
+    }
+
+    void Start()
+    {
+        ghoulAnimator = GetComponent<Animator>();
+    }
+
+    private void HitAnimation()
+    {
+        ghoulAnimator.SetBool("die_t", true);
     }
 }

@@ -15,18 +15,12 @@ public class GhoulSpawner : MonoBehaviour
 
     [Header ("Spawner Values")]
     [SerializeField] private float spawnInterval;
-    //[SerializeField] private float ghoulLifeTime = 1.0f;
 
     [Header ("Game Manager")]
     [SerializeField] private GameManager gameManager;
     [SerializeField] private int ghoulSpawnsPerSec = 1;
 
     private GhoulParticleFx ghoulParticleFx;
-
-    void Start()
-    {
-        ghoulParticleFx = GetComponent<GhoulParticleFx>();
-    }
 
     public float GhoulSpawnsPerSec 
     {
@@ -37,11 +31,11 @@ public class GhoulSpawner : MonoBehaviour
             //adjust spawnInterval based on the ghoulSpawnsPerSec value
             if (ghoulSpawnsPerSec == 1 || ghoulSpawnsPerSec == 2)
             {
-                spawnInterval = Random.Range(2.5f, 3f); // Set interval for Easy and Intermediate (1 or 2 ghouls per sec)
+                spawnInterval = Random.Range(2.5f, 3f); //time interval for easay and intermediate difficulty
             }
             else if (ghoulSpawnsPerSec == 3)
             {
-                spawnInterval = Random.Range(1.5f, 2f); // Set interval for Hard (3 ghouls per sec)
+                spawnInterval = Random.Range(1.5f, 2f); //time interval for hard difficulty
             }
         }
     }
@@ -60,7 +54,7 @@ public class GhoulSpawner : MonoBehaviour
 
     private IEnumerator SpawnGhoulOnDifficulty()
     {
-        while (gameManager.IsGameActive)  // Infinite loop for continuous spawning
+        while (gameManager.IsGameActive) //as long as game is active, continue spawning
         {
             List<Transform> unoccupiedGraves = new List<Transform>();
             foreach (Transform grave in graves)
@@ -68,7 +62,7 @@ public class GhoulSpawner : MonoBehaviour
                 // int spawned = 0;
                 bool isOccupied = false;
 
-                // Check how many ghouls are already in this grave
+                //check how many ghouls in the grave
                 foreach (Transform child in grave)
                 {
                     if (child.CompareTag("Vampire") || child.CompareTag("Zombie") || child.CompareTag("Skeleton"))
@@ -93,16 +87,12 @@ public class GhoulSpawner : MonoBehaviour
                     int randomIndex = Random.Range(0, unoccupiedGraves.Count);
                     Transform selectedGrave = unoccupiedGraves[randomIndex];
 
-                    // Instantiate a ghoul at the selected grave
+                    //instantiate a ghoul in a grave
                     SpawnGhoul(selectedGrave);
 
-                    // Remove the selected grave from the list to avoid selecting it again
+                    //remove the selected grave to the list of unoccupied graves
                     unoccupiedGraves.RemoveAt(randomIndex);
                 }
-            }
-            else
-            {
-                Debug.LogWarning("Not enough unoccupied graves to spawn the desired number of ghouls.");
             }
             yield return new WaitForSeconds(spawnInterval);
         }
@@ -110,16 +100,30 @@ public class GhoulSpawner : MonoBehaviour
 
     void SpawnGhoul(Transform grave)
     {
-        int randomIndex = Random.Range(0, ghoul.Length);
+        int chance = Random.Range(0, 100);
+        int selectedIndex; 
+
+        if (chance < 60)
+        {
+            selectedIndex = 0;
+        }
+        else if (chance < 90)
+        {
+            selectedIndex = 1; 
+        }
+        else
+        {
+            selectedIndex = 2;
+        }
+
         GameObject spawnedGhoul = Instantiate(
-            ghoul[randomIndex],
-            new Vector3(grave.position.x - 0.15f, grave.position.y - 0.6f, grave.position.z),  // Offset for proper centering
-            Quaternion.Euler(0, 180, 0)  // Flip the ghoul for correct orientation
+            ghoul[selectedIndex],
+            new Vector3(grave.position.x - 0.15f, grave.position.y - 0.6f, grave.position.z),  //center the zombie in the grave
+            Quaternion.Euler(0, 180, 0)  //to make the zombie face front
         );
         spawnedGhoul.transform.SetParent(grave);
-        //ghoulParticleFx.PlayGhoulAppearPFX();
-        //Destroy(spawnedGhoul, ghoulLifeTime);  // Destroy after certain lifetime
-
+        ghoulParticleFx = spawnedGhoul.GetComponent<GhoulParticleFx>();
+        ghoulParticleFx.PlayGhoulAppearPFX();
     }
 }
 

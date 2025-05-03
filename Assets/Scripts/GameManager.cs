@@ -1,9 +1,6 @@
-using System.Data;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,12 +9,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameOverText;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI difficultyText;
-    [SerializeField] TextMeshProUGUI timerText;
-
+    [SerializeField] private TextMeshProUGUI timerText;
 
     [Header ("Managers")]
     [SerializeField] private GhoulSpawner ghoulSpawner;
     [SerializeField] private TimeManager timeManager;
+    private HighScoreManager highScoreManager;
 
 
     [Header ("Sound Effects")]
@@ -30,10 +27,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject inactiveBackground;
 
     private bool isGameActive = false;
+    private GhoulStates states;
+
+    void Awake()
+    {
+        states = GetComponent<GhoulStates>();
+    }
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        highScoreManager = GetComponent<HighScoreManager>();
     }
     
     public bool IsGameActive
@@ -47,10 +51,11 @@ public class GameManager : MonoBehaviour
         gameOverText.gameObject.SetActive(true);
         isGameActive = false;
         timerText.gameObject.SetActive(false);
+
         PlayGameOverSfx(); //play the gameover sound
-        highScoreButton.SetActive(true);
-        inactiveBackground.SetActive(true);  
-        
+        highScoreButton.SetActive(true); 
+        inactiveBackground.SetActive(true); //activate black background
+        highScoreManager.CheckIfScoreQualifies();  //check for top5
     }
 
     public void RestartScene()

@@ -3,18 +3,39 @@ using UnityEngine;
 public class GhoulSfx : MonoBehaviour
 {
     private AudioSource audioSource;
-    [SerializeField] private AudioClip deathSfx;
+    private GhoulStates states;
+    [SerializeField] private AudioClip hitSfx;
+    [SerializeField] private AudioClip disappearSfx;
     [SerializeField] private float volume = 1f;
-        
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    void Awake()
+    {
+        states = GetComponent<GhoulStates>();
+    }
+
+    private void OnEnable()
+    {
+        states.ghoulHit += PlayHitSfx;
+        states.ghoulDisappear += PlayDisappearSfx;
+    }
+
+    private void OnDisable()
+    {
+        states.ghoulHit -= PlayHitSfx;
+        states.ghoulDisappear -= PlayDisappearSfx;
+    }
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
-    public void PlayDeathSfx()
+    private void PlayHitSfx()
     {
-        audioSource.PlayOneShot(deathSfx, volume);
+        audioSource.PlayOneShot(hitSfx, volume);    
+    }
+    private void PlayDisappearSfx()
+    {
+        audioSource.PlayOneShot(disappearSfx, volume);
     }
 }

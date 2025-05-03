@@ -8,8 +8,7 @@ public class TimeManager : MonoBehaviour
     private bool isGameOver = false;
     [SerializeField] private GhoulSpawner ghoulSpawner;
     [SerializeField] private GameManager gameManager;
-
-    // Update is called once per frame  
+ 
     void Update()
     {
         if (gameManager.IsGameActive)

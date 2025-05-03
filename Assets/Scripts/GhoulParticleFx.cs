@@ -2,22 +2,43 @@ using UnityEngine;
 
 public class GhoulParticleFx : MonoBehaviour
 {
+    private GhoulStates states;
     [SerializeField] private ParticleSystem whackParticleFx;
     [SerializeField] private ParticleSystem appearParticleFx;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private ParticleSystem disappearParticleFx;
+
+    void Awake()
     {
-        
+        states = GetComponent<GhoulStates>();
     }
 
-    // Update is called once per frame
-    public void PlayWhackPFX()
+    public void OnEnable()
     {
-         whackParticleFx.Play();
+        states.ghoulHit += PlayWhackPFX;
+        states.ghoulAppear += PlayGhoulAppearPFX;
+        states.ghoulDisappear += PlayGhoulDisappearPFX;
+    }
+
+    public void OnDisable()
+    {
+        states.ghoulHit -= PlayWhackPFX;
+        states.ghoulAppear -= PlayGhoulAppearPFX;
+        states.ghoulDisappear -= PlayGhoulDisappearPFX;
+    }
+
+    private void PlayWhackPFX()
+    {
+        whackParticleFx.Play();
     }
 
     public void PlayGhoulAppearPFX()
     {
         appearParticleFx.Play();
     }
+    
+    private void PlayGhoulDisappearPFX()
+    {
+        disappearParticleFx.Play();
+    }
+    
 }
